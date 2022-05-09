@@ -1932,6 +1932,12 @@ class PreTrainedTokenizerBase(SpecialTokensMixin, PushToHubMixin):
                 "Unable to load vocabulary from file. "
                 "Please check that the provided vocabulary is accessible and not corrupted."
             )
+        except Exception as e:
+            if str(e) == "The system cannot find the path specified. (os error 3)" or str(e) == "Permission denied (os error 13)":
+                init_kwargs["tokenizer_file"] = None
+                tokenizer = cls(*init_inputs, **init_kwargs)
+            else:
+                tokenizer = cls(*init_inputs, **init_kwargs)
 
         # Save inputs and kwargs for saving and re-loading with ``save_pretrained``
         # Removed: Now done at the base class level
